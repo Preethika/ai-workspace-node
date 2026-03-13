@@ -1,0 +1,1 @@
+This is a Node.js server application that communicates with the **Ollama AI server to enable chat functionality. I also developed a simple **React client application (https://github.com/Preethika/ai-chat-client-react) that connects to this server.
