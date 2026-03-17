@@ -5,9 +5,26 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+function buildPrompt(messages) {
+    let prompt = "You are a helpful JavaScript tutor.\n\n";
+
+    for (const msg of messages) {
+        if (msg.role === "user") {
+            prompt += `User: ${msg.content}\n`;
+        } else if (msg.role === "assistant") {
+            prompt += `Assistant: ${msg.content}\n`;
+        }
+    }
+
+    prompt += "Assistant:";
+    return prompt;
+}
+
 app.post("/api/chat", async (req, res) => {
     try {
-        const { message } = req.body;
+        const { messages } = req.body;
+
+        const prompt = buildPrompt(messages);
 
         const ollamaResponse = await fetch("http://localhost:11434/api/generate", {
             method: "POST",
@@ -16,20 +33,17 @@ app.post("/api/chat", async (req, res) => {
             },
             body: JSON.stringify({
                 model: "llama3",
-                prompt: `You are a helpful JavaScript tutor.\nAlways respond in proper Markdown format.\n\nUser: ${message}\nAssistant:`
-                // stream defaults to true
+                prompt
             })
         });
 
-        // Tell browser we're streaming
         res.setHeader("Content-Type", "text/plain");
-        res.setHeader("Transfer-Encoding", "chunked");
 
         const reader = ollamaResponse.body.getReader();
         const decoder = new TextDecoder();
 
         while (true) {
-            const { done, value } = await reader.read();
+            const { value, done } = await reader.read();
             if (done) break;
 
             const chunk = decoder.decode(value);
@@ -46,7 +60,6 @@ app.post("/api/chat", async (req, res) => {
         res.end();
 
     } catch (err) {
-        console.error(err);
         res.status(500).json({ error: "Streaming failed" });
     }
 });
