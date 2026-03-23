@@ -1,0 +1,21 @@
+Date,Order_number,Item_number,Item_name,Price,Sell Quantity,location
+2024-01-01,ORD001,ITM101,Wireless Mouse,500,2,Chennai
+2024-01-01,ORD002,ITM102,Mechanical Keyboard,1200,1,Bangalore
+2024-01-02,ORD003,ITM103,USB-C Charger,750,3,Hyderabad
+2024-01-02,ORD004,ITM101,Wireless Mouse,500,1,Chennai
+2024-01-03,ORD005,ITM104,Noise Cancelling Headphones,2000,2,Mumbai
+2024-01-03,ORD006,ITM102,Mechanical Keyboard,1200,2,Delhi
+2024-01-04,ORD007,ITM103,USB-C Charger,750,1,Chennai
+2024-01-04,ORD008,ITM105,Laptop Stand,300,5,Bangalore
+2024-01-05,ORD009,ITM101,Wireless Mouse,500,4,Hyderabad
+2024-01-05,ORD010,ITM104,Noise Cancelling Headphones,2000,1,Mumbai
+2024-01-06,ORD011,ITM105,Laptop Stand,300,6,Delhi
+2024-01-06,ORD012,ITM102,Mechanical Keyboard,1200,1,Chennai
+2024-01-07,ORD013,ITM103,USB-C Charger,750,2,Bangalore
+2024-01-07,ORD014,ITM101,Wireless Mouse,500,3,Mumbai
+2024-01-08,ORD015,ITM104,Noise Cancelling Headphones,2000,2,Hyderabad
+2024-01-08,ORD016,ITM105,Laptop Stand,300,4,Chennai
+2024-01-09,ORD017,ITM102,Mechanical Keyboard,1200,2,Delhi
+2024-01-09,ORD018,ITM103,USB-C Charger,750,3,Bangalore
+2024-01-10,ORD019,ITM101,Wireless Mouse,500,5,Chennai
+2024-01-10,ORD020,ITM104,Noise Cancelling Headphones,2000,1,Delhi
