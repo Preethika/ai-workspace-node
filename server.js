@@ -3,6 +3,7 @@ import cors from "cors";
 import multer from "multer";
 import fs from "fs";
 import csv from "csv-parser";
+import { ChromaClient } from "chromadb";
 import {
     initVectorDB,
     addToIndex,
@@ -17,6 +18,23 @@ app.use(cors());
 app.use(express.json());
 const upload = multer({ dest: "uploads/" });
 
+const chroma = new ChromaClient();
+let collection;
+
+// init DB
+async function initDB() {
+    await chroma.deleteCollection({ name: "products" });
+
+    collection = await chroma.createCollection({
+        name: "products",
+        embeddingFunction: {
+            generate: async () => {
+                throw new Error("Manual embeddings only");
+            },
+        },
+    });
+}
+await initDB();
 
 // Ollama embedding
 async function getEmbedding(text) {
@@ -63,6 +81,62 @@ function buildPrompt(messages) {    //setting context for the model, so it knows
     prompt += "Assistant:";
     return prompt;
 }
+
+// function cosineSimilarity(a, b) {
+//     const dot = a.reduce((sum, val, i) => sum + val * b[i], 0);
+//     const magA = Math.sqrt(a.reduce((sum, val) => sum + val ** 2, 0));
+//     const magB = Math.sqrt(b.reduce((sum, val) => sum + val ** 2, 0));
+
+//     return dot / (magA * magB);
+// }
+
+app.post("/add", async (req, res) => {
+    const { items } = req.body;
+    console.log('Adding items:', items)
+    for (const item of items) {
+        const embedding = await getEmbedding(`${item.name}. Category: ${item.category}. Description: ${item.description}`);
+
+        await collection.add({
+            ids: [item.id],
+            documents: [item.name],
+            embeddings: [embedding],
+            metadatas: [{ category: "accessories" }],
+        });
+    }
+
+    res.json({ message: "Data indexed" });
+});
+
+app.post("/search", async (req, res) => {
+    const { query } = req.body;
+
+    const queryEmbedding = await getEmbedding(query);
+
+    const results = await collection.query({
+        queryEmbeddings: [queryEmbedding],
+        nResults: 5,
+    });
+
+    res.json(results);
+});
+
+app.post("/aiSearch", async (req, res) => {
+    const { query } = req.body;
+
+    const queryEmbedding = await getEmbedding(query);
+    const results = await collection.query({
+        queryEmbeddings: [queryEmbedding],
+        nResults: 3,
+    });
+
+    const context = results.documents[0].join("\n");
+    const prompt = `Answer using this data:\n${context}\n\nQuestion: ${query}`;
+
+    const answer = await callOllama(prompt);
+
+    res.json({ answer });
+});
+
 
 app.post("/upload", upload.single("file"), (req, res) => {
     const results = [];

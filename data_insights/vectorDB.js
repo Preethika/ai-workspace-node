@@ -26,7 +26,9 @@ export function addToIndex(embedding, data, id) {
 }
 
 export function searchIndex(queryEmbedding, k = 5) {
+    console.log({ queryEmbedding })
     const result = index.searchKnn(queryEmbedding, k);
+    console.log({ result })
 
     return result.neighbors.map((id) => storedData[id]);
 }
